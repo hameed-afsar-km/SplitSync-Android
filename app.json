@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "SplitSync",
-    "slug": "SplitSync-APP",
+    "slug": "splitsync",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,13 +12,18 @@
       "backgroundColor": "#030305"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hameedafsarkmsorganization.splitsync",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundColor": "#030305"
-      }
+      },
+      "package": "com.hameedafsarkmsorganization.splitsync"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -32,6 +37,12 @@
           "iosAppId": "ca-app-pub-3940256099942544~1458002511"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "a9baece6-6fb4-444b-b252-c0674988dbba"
+      }
+    },
+    "owner": "hameed-afsar-kms-organization"
   }
 }
