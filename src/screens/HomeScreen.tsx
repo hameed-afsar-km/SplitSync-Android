@@ -89,8 +89,8 @@ const HomeScreen: React.FC<Props> = ({
             {/* Hero */}
             <View style={styles.hero}>
                 <Text style={styles.heroTitle}>
-                    <Text style={{ color: themePrimary, textShadowColor: themePrimary, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 15 }}>Split</Text>
-                    <Text style={{ color: themeSecondary, textShadowColor: themeSecondary, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 15 }}>Sync</Text>
+                    <Text style={{ color: themePrimary }}>Split</Text>
+                    <Text style={{ color: themeSecondary }}>Sync</Text>
                 </Text>
                 <Text style={styles.heroSub}>
                     Effortlessly track trips, group expenses, and balances.
@@ -114,26 +114,29 @@ const HomeScreen: React.FC<Props> = ({
                 </TouchableOpacity>
 
                 {/* Quota Pill */}
-                <View style={styles.quotaPill}>
-                    <View
-                        style={[
-                            styles.quotaBar,
-                            {
-                                width: `${Math.max(quotaPercent * 100, 5)}%`,
-                            },
-                        ]}
-                    >
-                        <LinearGradient
-                            colors={[themePrimary, themeSecondary]}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            style={{ width: 160, height: '100%' }}
-                        />
+                <View style={styles.quotaPillContainer}>
+                    <View style={styles.quotaPill}>
+                        <View
+                            style={[
+                                styles.quotaBar,
+                                {
+                                    width: `${quotaPercent > 0 ? Math.max(quotaPercent * 100, 8) : 0}%`,
+                                },
+                            ]}
+                        >
+                            <LinearGradient
+                                colors={[themePrimary, themeSecondary]}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 0 }}
+                                style={StyleSheet.absoluteFillObject}
+                            />
+                        </View>
                     </View>
                     <Text style={styles.quotaText}>
-                        {trips.length} / {tripLimit} trips used
+                        <Text style={{ color: Colors.textMain, fontWeight: '800' }}>{trips.length}</Text>
+                        <Text style={{ color: Colors.textMuted }}> / {tripLimit} trips active</Text>
                         {trips.length >= tripLimit && (
-                            <Text style={{ color: Colors.danger }}> · Limit reached</Text>
+                            <Text style={{ color: Colors.danger, fontWeight: '700' }}> · LIMIT REACHED</Text>
                         )}
                     </Text>
                 </View>
@@ -268,7 +271,7 @@ const HomeScreen: React.FC<Props> = ({
                                 activeOpacity={0.8}
                             >
                                 <View style={styles.tripCardTop}>
-                                    <Text style={[styles.tripName, { textShadowColor: 'rgba(255,255,255,0.3)', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 6 }]} numberOfLines={1}>
+                                    <Text style={styles.tripName} numberOfLines={1}>
                                         {trip.tripName}
                                     </Text>
                                     <View style={styles.tripCardRight}>
@@ -369,34 +372,31 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
-    quotaPill: {
-        height: 28,
-        minWidth: 160,
-        borderRadius: 100,
-        backgroundColor: 'rgba(255,255,255,0.04)',
-        borderWidth: 1,
-        borderColor: Colors.borderGlass,
-        overflow: 'hidden',
+    quotaPillContainer: {
+        width: '100%',
+        maxWidth: 280,
+        gap: 8,
+        marginBottom: 24,
         alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 16,
-        position: 'relative',
-        paddingHorizontal: 14,
+    },
+    quotaPill: {
+        height: 6,
+        width: '100%',
+        borderRadius: 100,
+        backgroundColor: 'rgba(255,255,255,0.06)',
+        overflow: 'hidden',
     },
     quotaBar: {
         position: 'absolute',
         left: 0,
         top: 0,
         height: '100%',
+        borderRadius: 100,
         overflow: 'hidden',
-        opacity: 0.18,
     },
     quotaText: {
-        color: Colors.textMuted,
-        fontSize: 11,
-        fontWeight: '600',
+        fontSize: 12,
         letterSpacing: 0.5,
-        zIndex: 1,
     },
     actionRow: {
         flexDirection: 'row',

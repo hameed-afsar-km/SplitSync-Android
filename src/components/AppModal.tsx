@@ -9,6 +9,7 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { Colors, Spacing, Radius } from '../theme';
 import { useSettingsStore } from '../store';
 
@@ -30,25 +31,28 @@ const AppModal: React.FC<Props> = ({ visible, title, onClose, children }) => {
             statusBarTranslucent
             onRequestClose={onClose}
         >
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={styles.overlay}
-            >
+            <View style={styles.overlay}>
+                <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
                 <TouchableOpacity
                     style={styles.backdrop}
                     activeOpacity={1}
                     onPress={onClose}
                 />
-                <View style={styles.content}>
-                    <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        keyboardShouldPersistTaps="handled"
-                    >
-                        <Text style={[styles.title, { color: themePrimary }]}>{title}</Text>
-                        {children}
-                    </ScrollView>
-                </View>
-            </KeyboardAvoidingView>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                    style={styles.keyboardView}
+                >
+                    <View style={styles.content}>
+                        <ScrollView
+                            showsVerticalScrollIndicator={false}
+                            keyboardShouldPersistTaps="handled"
+                        >
+                            <Text style={[styles.title, { color: themePrimary }]}>{title}</Text>
+                            {children}
+                        </ScrollView>
+                    </View>
+                </KeyboardAvoidingView>
+            </View>
         </Modal>
     );
 };
@@ -56,30 +60,39 @@ const AppModal: React.FC<Props> = ({ visible, title, onClose, children }) => {
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.8)',
         alignItems: 'center',
         justifyContent: 'center',
         padding: Spacing.lg,
+    },
+    keyboardView: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     backdrop: {
         position: 'absolute',
         top: 0, left: 0, right: 0, bottom: 0,
     },
     content: {
-        backgroundColor: Colors.bgSecondary,
+        backgroundColor: 'rgba(20, 20, 28, 0.9)',
         borderWidth: 1,
-        borderColor: Colors.borderGlass,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
         borderRadius: Radius.xxl + 8,
         width: '100%',
         maxWidth: 480,
         padding: Spacing.xxl,
         maxHeight: '90%',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 20 },
+        shadowOpacity: 0.5,
+        shadowRadius: 30,
+        elevation: 20,
     },
     title: {
         fontSize: 22,
         fontWeight: '700',
         marginBottom: Spacing.xl,
-        color: Colors.accent1,
+        letterSpacing: -0.5,
     },
 });
 

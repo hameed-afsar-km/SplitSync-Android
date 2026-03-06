@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Zap, Smartphone, RefreshCw } from 'lucide-react-native';
@@ -109,34 +110,48 @@ const AnimatedBackground = () => {
   const anim1 = React.useRef(new Animated.Value(0)).current;
   const anim2 = React.useRef(new Animated.Value(0)).current;
   const anim3 = React.useRef(new Animated.Value(0)).current;
+  const anim4 = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
-    Animated.loop(
-      Animated.timing(anim1, { toValue: 1, duration: 25000, easing: Easing.inOut(Easing.ease), useNativeDriver: true })
-    ).start();
-    Animated.loop(
-      Animated.timing(anim2, { toValue: 1, duration: 30000, easing: Easing.inOut(Easing.ease), useNativeDriver: true })
-    ).start();
-    Animated.loop(
-      Animated.timing(anim3, { toValue: 1, duration: 22000, easing: Easing.inOut(Easing.ease), useNativeDriver: true })
-    ).start();
+    const createAnim = (val: Animated.Value, duration: number) =>
+      Animated.loop(
+        Animated.timing(val, {
+          toValue: 1,
+          duration,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        })
+      );
+
+    createAnim(anim1, 25000).start();
+    createAnim(anim2, 35000).start();
+    createAnim(anim3, 22000).start();
+    createAnim(anim4, 40000).start();
   }, []);
 
-  const x1 = anim1.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 150, 0] });
-  const y1 = anim1.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 100, 0] });
+  const x1 = anim1.interpolate({ inputRange: [0, 0.5, 1], outputRange: [-50, 150, -50] });
+  const y1 = anim1.interpolate({ inputRange: [0, 0.5, 1], outputRange: [-50, 100, -50] });
 
-  const x2 = anim2.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, -150, 0] });
-  const y2 = anim2.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, -100, 0] });
+  const x2 = anim2.interpolate({ inputRange: [0, 0.5, 1], outputRange: [50, -200, 50] });
+  const y2 = anim2.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, -150, 0] });
 
-  const x3 = anim3.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 100, 0] });
-  const y3 = anim3.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, -150, 0] });
+  const x3 = anim3.interpolate({ inputRange: [0, 0.5, 1], outputRange: [-100, 100, -100] });
+  const y3 = anim3.interpolate({ inputRange: [0, 0.5, 1], outputRange: [150, -150, 150] });
+
+  const x4 = anim4.interpolate({ inputRange: [0, 0.5, 1], outputRange: [100, -100, 100] });
+  const y4 = anim4.interpolate({ inputRange: [0, 0.5, 1], outputRange: [-200, 200, -200] });
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <LinearGradient
+        colors={['#030305', '#08081a', '#030305']}
+        style={StyleSheet.absoluteFill}
+      />
       <Animated.View style={[styles.blob, styles.blob1, { transform: [{ translateX: x1 }, { translateY: y1 }] }]} />
       <Animated.View style={[styles.blob, styles.blob2, { transform: [{ translateX: x2 }, { translateY: y2 }] }]} />
       <Animated.View style={[styles.blob, styles.blob3, { transform: [{ translateX: x3 }, { translateY: y3 }] }]} />
-      <BlurView intensity={90} tint="dark" style={StyleSheet.absoluteFill} />
+      <Animated.View style={[styles.blob, styles.blob4, { transform: [{ translateX: x4 }, { translateY: y4 }] }]} />
+      <BlurView intensity={Platform.OS === 'ios' ? 70 : 100} tint="dark" style={StyleSheet.absoluteFill} />
     </View>
   );
 };
@@ -879,8 +894,9 @@ const styles = StyleSheet.create({
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     overflow: 'hidden',
   },
-  blob: { position: 'absolute', borderRadius: 9999, opacity: 0.15 },
-  blob1: { width: 400, height: 400, backgroundColor: Colors.accent1, top: -100, left: -100 },
-  blob2: { width: 350, height: 350, backgroundColor: Colors.accent2, bottom: -100, right: -80 },
-  blob3: { width: 280, height: 280, backgroundColor: '#4f46e5', top: '30%', left: '20%', opacity: 0.1 },
+  blob: { position: 'absolute', borderRadius: 9999, opacity: 0.12 },
+  blob1: { width: 500, height: 500, backgroundColor: Colors.accent1, top: -100, left: -100 },
+  blob2: { width: 450, height: 450, backgroundColor: Colors.accent2, bottom: -100, right: -80 },
+  blob3: { width: 380, height: 380, backgroundColor: '#4f46e5', top: '20%', left: '10%', opacity: 0.08 },
+  blob4: { width: 320, height: 320, backgroundColor: '#8b5cf6', bottom: '20%', right: '10%', opacity: 0.08 },
 });
