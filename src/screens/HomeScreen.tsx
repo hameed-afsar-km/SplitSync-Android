@@ -21,6 +21,7 @@ import {
 import { Colors, Spacing, Radius } from '../theme';
 import { Trip } from '../types';
 import { useSettingsStore } from '../store';
+import GradientText from '../components/GradientText';
 
 const { width } = Dimensions.get('window');
 
@@ -54,10 +55,16 @@ const HomeScreen: React.FC<Props> = ({
     const filtered = trips
         .filter((trip) => {
             const s = search.toLowerCase();
-            const matchSearch =
-                trip.tripName.toLowerCase().includes(s) ||
-                (trip.startDate && trip.startDate.includes(s));
-            if (!matchSearch) return false;
+            const tripNameMatch = trip.tripName.toLowerCase().includes(s);
+
+            // Smarter date matching
+            const startDateStr = trip.startDate ? new Date(trip.startDate).toLocaleDateString().toLowerCase() : '';
+            const endDateStr = trip.endDate ? new Date(trip.endDate).toLocaleDateString().toLowerCase() : '';
+            const dateMatch = startDateStr.includes(s) || endDateStr.includes(s) ||
+                (trip.startDate && trip.startDate.includes(s)) ||
+                (trip.endDate && trip.endDate.includes(s));
+
+            if (!tripNameMatch && !dateMatch) return false;
             if (filterType === 'single' && !trip.isSingleDay) return false;
             if (filterType === 'multi' && trip.isSingleDay) return false;
             return true;
@@ -88,10 +95,15 @@ const HomeScreen: React.FC<Props> = ({
         >
             {/* Hero */}
             <View style={styles.hero}>
-                <Text style={styles.heroTitle}>
-                    <Text style={{ color: themePrimary }}>Split</Text>
-                    <Text style={{ color: themeSecondary }}>Sync</Text>
-                </Text>
+                <View style={[styles.heroTitleRow, { alignItems: 'center', justifyContent: 'center' }]}>
+                    <Text style={[styles.heroTitle, { color: '#ffffff', marginBottom: 0 }]}>Split</Text>
+                    <GradientText
+                        colors={[themePrimary, themeSecondary]}
+                        style={[styles.heroTitle, { marginBottom: 0 }]}
+                    >
+                        Sync
+                    </GradientText>
+                </View>
                 <Text style={styles.heroSub}>
                     Effortlessly track trips, group expenses, and balances.
                 </Text>
@@ -271,7 +283,7 @@ const HomeScreen: React.FC<Props> = ({
                                 activeOpacity={0.8}
                             >
                                 <View style={styles.tripCardTop}>
-                                    <Text style={styles.tripName} numberOfLines={1}>
+                                    <Text style={[styles.tripName, { color: '#ffffff' }]} numberOfLines={1}>
                                         {trip.tripName}
                                     </Text>
                                     <View style={styles.tripCardRight}>
@@ -344,6 +356,11 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         letterSpacing: -2,
         marginBottom: 10,
+    },
+    heroTitleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 0,
     },
     heroSub: {
         fontSize: 15,

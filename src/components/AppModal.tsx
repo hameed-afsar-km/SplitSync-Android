@@ -8,6 +8,7 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
+    Dimensions,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Colors, Spacing, Radius } from '../theme';
@@ -39,13 +40,16 @@ const AppModal: React.FC<Props> = ({ visible, title, onClose, children }) => {
                     onPress={onClose}
                 />
                 <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={styles.keyboardView}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
                 >
                     <View style={styles.content}>
+                        <BlurView intensity={Platform.OS === 'ios' ? 60 : 80} tint="dark" style={StyleSheet.absoluteFill} />
                         <ScrollView
                             showsVerticalScrollIndicator={false}
                             keyboardShouldPersistTaps="handled"
+                            contentContainerStyle={styles.scrollContent}
                         >
                             <Text style={[styles.title, { color: themePrimary }]}>{title}</Text>
                             {children}
@@ -74,19 +78,22 @@ const styles = StyleSheet.create({
         top: 0, left: 0, right: 0, bottom: 0,
     },
     content: {
-        backgroundColor: 'rgba(20, 20, 28, 0.9)',
+        overflow: 'hidden',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderColor: 'rgba(255, 255, 255, 0.15)',
         borderRadius: Radius.xxl + 8,
         width: '100%',
         maxWidth: 480,
-        padding: Spacing.xxl,
-        maxHeight: '90%',
+        maxHeight: Dimensions.get('window').height * 0.85,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 20 },
         shadowOpacity: 0.5,
         shadowRadius: 30,
         elevation: 20,
+    },
+    scrollContent: {
+        padding: Spacing.xl,
+        flexGrow: 0,
     },
     title: {
         fontSize: 22,

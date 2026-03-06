@@ -39,8 +39,8 @@ const StatBox: React.FC<{
     color?: string;
 }> = ({ label, value, color }) => (
     <View style={styles.statBox}>
-        <Text style={styles.statLabel}>{label}</Text>
-        <Text style={[styles.statValue, color ? { color } : {}]}>{value}</Text>
+        <Text style={styles.statLabel} numberOfLines={1}>{label}</Text>
+        <Text style={[styles.statValue, color ? { color } : {}]} numberOfLines={1} adjustsFontSizeToFit>{value}</Text>
     </View>
 );
 
@@ -77,7 +77,7 @@ const TripScreen: React.FC<Props> = ({ trip, onBack, onOpenModal }) => {
                 <View style={styles.headerTop}>
                     <View style={styles.headerLeft}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                            <Text style={[styles.tripTitle, { color: themePrimary }]}>
+                            <Text style={[styles.tripTitle, { color: '#ffffff' }]}>
                                 {trip.tripName}
                             </Text>
                             <TouchableOpacity
@@ -264,7 +264,7 @@ const MemberCard: React.FC<{
     <View style={styles.memberCard}>
         <View style={styles.memberCardTop}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
-                <Text style={styles.memberName} numberOfLines={1}>
+                <Text style={[styles.memberName, { color: '#ffffff' }]} numberOfLines={1}>
                     {member.name}
                 </Text>
                 <TouchableOpacity
@@ -278,25 +278,25 @@ const MemberCard: React.FC<{
             </View>
             <View style={styles.memberActionsRow}>
                 <TouchableOpacity
-                    style={styles.smallBtn}
+                    style={styles.compactBtn}
                     onPress={() => onOpenModal('VIEW_MEMBER_LOGS', member.id)}
                 >
-                    <List size={13} color={Colors.textMain} />
-                    <Text style={styles.smallBtnText}>Details</Text>
+                    <List size={11} color={Colors.textMain} />
+                    <Text style={styles.compactBtnText}>Details</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={styles.smallBtn}
+                    style={styles.compactBtn}
                     onPress={() => onOpenModal('CONFIRM_RESET_MEMBER', member.id)}
                 >
-                    <RefreshCw size={13} color={Colors.textMain} />
-                    <Text style={styles.smallBtnText}>Reset</Text>
+                    <RefreshCw size={11} color={Colors.textMain} />
+                    <Text style={styles.compactBtnText}>Reset</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.smallBtn, styles.dangerBtn]}
+                    style={[styles.compactBtn, styles.dangerBtn]}
                     onPress={() => onOpenModal('CONFIRM_DELETE_MEMBER', member.id)}
                 >
-                    <Trash2 size={13} color={Colors.danger} />
-                    <Text style={[styles.smallBtnText, { color: Colors.danger }]}>Remove</Text>
+                    <Trash2 size={11} color={Colors.danger} />
+                    <Text style={[styles.compactBtnText, { color: Colors.danger }]}>Remove</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -470,12 +470,12 @@ const styles = StyleSheet.create({
     },
     emptyText: { color: Colors.textMuted, fontSize: 14, textAlign: 'center', maxWidth: 260 },
     memberCard: {
-        backgroundColor: Colors.bgGlass,
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
         borderWidth: 1,
-        borderColor: Colors.borderGlass,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
         borderRadius: Radius.xl,
-        padding: Spacing.lg,
-        gap: Spacing.md,
+        padding: Spacing.md,
+        gap: Spacing.sm,
     },
     memberCardTop: {
         flexDirection: 'row',
@@ -483,41 +483,53 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         borderBottomWidth: 1,
         borderBottomColor: Colors.borderGlass,
-        paddingBottom: Spacing.md,
+        paddingBottom: 10,
         flexWrap: 'wrap',
         gap: 8,
     },
-    memberName: { color: Colors.textMain, fontSize: 18, fontWeight: '700', flex: 1 },
-    memberActionsRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
+    memberName: { color: Colors.textMain, fontSize: 16, fontWeight: '700', flex: 1 },
+    memberActionsRow: { flexDirection: 'row', gap: 4, flexWrap: 'wrap' },
+    compactBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 3,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderWidth: 1,
+        borderColor: Colors.borderGlass,
+        borderRadius: 6,
+        paddingVertical: 5,
+        paddingHorizontal: 8,
+    },
+    compactBtnText: { color: Colors.textMain, fontSize: 10, fontWeight: '600' },
     statsGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 8,
+        gap: 6,
     },
     statBox: {
-        backgroundColor: 'rgba(0,0,0,0.2)',
-        borderRadius: 12,
-        padding: Spacing.md,
-        flex: 1,
-        minWidth: 100,
+        backgroundColor: 'rgba(0,0,0,0.25)',
+        borderRadius: 10,
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+        width: '48.5%',
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
-        borderColor: Colors.borderGlass,
+        borderColor: 'rgba(255,255,255,0.05)',
     },
     statLabel: {
         color: Colors.textMuted,
-        fontSize: 10,
+        fontSize: 9,
         fontWeight: '700',
         textTransform: 'uppercase',
-        letterSpacing: 1,
+        letterSpacing: 0.8,
         textAlign: 'center',
     },
     statValue: {
         color: Colors.textMain,
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: '700',
-        marginTop: 4,
+        marginTop: 2,
         textAlign: 'center',
     },
     editIconBtn: {

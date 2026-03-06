@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Zap, Smartphone, RefreshCw } from 'lucide-react-native';
+import { Svg, Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import Constants from 'expo-constants';
@@ -109,8 +110,7 @@ const EditTripModalContent = ({ data, onClose, onEditTrip }: any) => {
 const AnimatedBackground = () => {
   const anim1 = React.useRef(new Animated.Value(0)).current;
   const anim2 = React.useRef(new Animated.Value(0)).current;
-  const anim3 = React.useRef(new Animated.Value(0)).current;
-  const anim4 = React.useRef(new Animated.Value(0)).current;
+  const { themePrimary, themeSecondary } = useSettingsStore();
 
   React.useEffect(() => {
     const createAnim = (val: Animated.Value, duration: number) =>
@@ -123,35 +123,48 @@ const AnimatedBackground = () => {
         })
       );
 
-    createAnim(anim1, 25000).start();
-    createAnim(anim2, 35000).start();
-    createAnim(anim3, 22000).start();
-    createAnim(anim4, 40000).start();
+    createAnim(anim1, 30000).start();
+    createAnim(anim2, 40000).start();
   }, []);
 
-  const x1 = anim1.interpolate({ inputRange: [0, 0.5, 1], outputRange: [-50, 150, -50] });
-  const y1 = anim1.interpolate({ inputRange: [0, 0.5, 1], outputRange: [-50, 100, -50] });
+  const x1 = anim1.interpolate({ inputRange: [0, 0.5, 1], outputRange: [-100, 100, -100] });
+  const y1 = anim1.interpolate({ inputRange: [0, 0.5, 1], outputRange: [-100, 100, -100] });
 
-  const x2 = anim2.interpolate({ inputRange: [0, 0.5, 1], outputRange: [50, -200, 50] });
-  const y2 = anim2.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, -150, 0] });
-
-  const x3 = anim3.interpolate({ inputRange: [0, 0.5, 1], outputRange: [-100, 100, -100] });
-  const y3 = anim3.interpolate({ inputRange: [0, 0.5, 1], outputRange: [150, -150, 150] });
-
-  const x4 = anim4.interpolate({ inputRange: [0, 0.5, 1], outputRange: [100, -100, 100] });
-  const y4 = anim4.interpolate({ inputRange: [0, 0.5, 1], outputRange: [-200, 200, -200] });
+  const x2 = anim2.interpolate({ inputRange: [0, 0.5, 1], outputRange: [100, -100, 100] });
+  const y2 = anim2.interpolate({ inputRange: [0, 0.5, 1], outputRange: [100, -100, 100] });
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
       <LinearGradient
-        colors={['#030305', '#08081a', '#030305']}
+        colors={['#030305', '#050510', '#030305']}
         style={StyleSheet.absoluteFill}
       />
-      <Animated.View style={[styles.blob, styles.blob1, { transform: [{ translateX: x1 }, { translateY: y1 }] }]} />
-      <Animated.View style={[styles.blob, styles.blob2, { transform: [{ translateX: x2 }, { translateY: y2 }] }]} />
-      <Animated.View style={[styles.blob, styles.blob3, { transform: [{ translateX: x3 }, { translateY: y3 }] }]} />
-      <Animated.View style={[styles.blob, styles.blob4, { transform: [{ translateX: x4 }, { translateY: y4 }] }]} />
-      <BlurView intensity={Platform.OS === 'ios' ? 70 : 100} tint="dark" style={StyleSheet.absoluteFill} />
+
+      <Animated.View style={[styles.blobContainer, { transform: [{ translateX: x1 }, { translateY: y1 }] }]}>
+        <Svg height="600" width="600" viewBox="0 0 600 600">
+          <Defs>
+            <RadialGradient id="grad1" cx="300" cy="300" rx="300" ry="300" fx="300" fy="300" gradientUnits="userSpaceOnUse">
+              <Stop offset="0" stopColor={themePrimary} stopOpacity="0.15" />
+              <Stop offset="1" stopColor={themePrimary} stopOpacity="0" />
+            </RadialGradient>
+          </Defs>
+          <Rect x="0" y="0" width="600" height="600" fill="url(#grad1)" />
+        </Svg>
+      </Animated.View>
+
+      <Animated.View style={[styles.blobContainer, { right: -150, bottom: -150, transform: [{ translateX: x2 }, { translateY: y2 }] }]}>
+        <Svg height="500" width="500" viewBox="0 0 500 500">
+          <Defs>
+            <RadialGradient id="grad2" cx="250" cy="250" rx="250" ry="250" fx="250" fy="250" gradientUnits="userSpaceOnUse">
+              <Stop offset="0" stopColor={themeSecondary} stopOpacity="0.12" />
+              <Stop offset="1" stopColor={themeSecondary} stopOpacity="0" />
+            </RadialGradient>
+          </Defs>
+          <Rect x="0" y="0" width="500" height="500" fill="url(#grad2)" />
+        </Svg>
+      </Animated.View>
+
+      <BlurView intensity={Platform.OS === 'ios' ? 30 : 50} tint="dark" style={StyleSheet.absoluteFill} />
     </View>
   );
 };
@@ -266,11 +279,6 @@ export default function App() {
     startDate: string;
     endDate: string;
   }) => {
-    if (trips.length >= tripLimit) {
-      closeModal();
-      setTimeout(() => openModal('LIMIT_REACHED'), 50);
-      return;
-    }
     let numberOfDays = 1;
     if (!data.isSingleDay && data.startDate && data.endDate) {
       const diff = Math.abs(new Date(data.endDate).getTime() - new Date(data.startDate).getTime());
@@ -646,17 +654,19 @@ export default function App() {
       return (
         <AppModal visible title="Settings" onClose={closeModal}>
           <Text style={s.settingLabel}>CURRENCY DENOMINATION</Text>
-          <View style={s.currencyGrid}>
-            {currencies.map(c => (
-              <TouchableOpacity
-                key={c.value}
-                style={[s.currencyItem, currency === c.value && { borderColor: themePrimary, backgroundColor: `${themePrimary}20` }]}
-                onPress={() => setCurrency(c.value)}
-              >
-                <Text style={[s.currencyText, currency === c.value && { color: themePrimary }]}>{c.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: Spacing.md }}>
+            <View style={s.currencyRow}>
+              {currencies.map(c => (
+                <TouchableOpacity
+                  key={c.value}
+                  style={[s.currencyItem, currency === c.value && { borderColor: themePrimary, backgroundColor: `${themePrimary}20` }]}
+                  onPress={() => setCurrency(c.value)}
+                >
+                  <Text style={[s.currencyText, currency === c.value && { color: themePrimary }]}>{c.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
 
           <Text style={[s.settingLabel, { marginTop: Spacing.xl }]}>APP APPEARANCE</Text>
           <View style={s.colorRow}>
@@ -785,7 +795,13 @@ export default function App() {
         ) : (
           <HomeScreen
             trips={trips}
-            onCreateTrip={() => openModal('CREATE_TRIP')}
+            onCreateTrip={() => {
+              if (trips.length >= tripLimit) {
+                openModal('LIMIT_REACHED');
+              } else {
+                openModal('CREATE_TRIP');
+              }
+            }}
             onSelectTrip={setCurrentTripId}
             onDeleteTrip={(id) => openModal('CONFIRM_DELETE_INDIVIDUAL', id)}
             onClearAll={() => openModal('CONFIRM_CLEAR_ALL_TRIPS')}
@@ -841,7 +857,7 @@ const s = StyleSheet.create({
   logAmount: { fontWeight: '700', fontSize: 15 },
   confirmText: { color: Colors.textMuted, fontSize: 15, lineHeight: 22, marginBottom: 8 },
   settingLabel: { color: Colors.textMuted, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 },
-  currencyGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  currencyRow: { flexDirection: 'row', gap: 8 },
   currencyItem: {
     paddingVertical: 8, paddingHorizontal: 12,
     borderRadius: 10, borderWidth: 1,
@@ -894,9 +910,8 @@ const styles = StyleSheet.create({
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     overflow: 'hidden',
   },
-  blob: { position: 'absolute', borderRadius: 9999, opacity: 0.12 },
-  blob1: { width: 500, height: 500, backgroundColor: Colors.accent1, top: -100, left: -100 },
-  blob2: { width: 450, height: 450, backgroundColor: Colors.accent2, bottom: -100, right: -80 },
-  blob3: { width: 380, height: 380, backgroundColor: '#4f46e5', top: '20%', left: '10%', opacity: 0.08 },
-  blob4: { width: 320, height: 320, backgroundColor: '#8b5cf6', bottom: '20%', right: '10%', opacity: 0.08 },
+  blobContainer: {
+    position: 'absolute',
+    opacity: 0.8,
+  },
 });

@@ -10,6 +10,7 @@ import {
 import { Undo2, Settings } from 'lucide-react-native';
 import { Colors, Spacing, Radius } from '../theme';
 import { useSettingsStore } from '../store';
+import GradientText from './GradientText';
 
 interface Props {
     onUndo: () => void;
@@ -25,9 +26,14 @@ const Header: React.FC<Props> = ({ onUndo, onSettings, onLogoPress }) => {
             <StatusBar barStyle="light-content" backgroundColor="#030305" />
             <View style={styles.inner}>
                 <TouchableOpacity onPress={onLogoPress} activeOpacity={0.8}>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.logoText}>Split</Text>
-                        <Text style={[styles.logoText, { color: themePrimary }]}>Sync</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={[styles.logoText, { color: '#ffffff' }]}>Split</Text>
+                        <GradientText
+                            colors={[themePrimary, themeSecondary]}
+                            style={styles.logoText}
+                        >
+                            Sync
+                        </GradientText>
                     </View>
                 </TouchableOpacity>
                 <View style={styles.actions}>

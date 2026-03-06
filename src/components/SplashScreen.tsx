@@ -7,7 +7,9 @@ import {
     Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Svg, Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { Colors } from '../theme';
+import GradientText from './GradientText';
 
 const { width, height } = Dimensions.get('window');
 
@@ -93,14 +95,28 @@ const SplashScreen: React.FC<Props> = ({ onFinish }) => {
         <View style={styles.container}>
             {/* Background blobs */}
             <View style={styles.blobContainer}>
-                <LinearGradient
-                    colors={[Colors.accent1, 'transparent']}
-                    style={styles.blob1}
-                />
-                <LinearGradient
-                    colors={[Colors.accent2, 'transparent']}
-                    style={styles.blob2}
-                />
+                <View style={[styles.svgBlob, { top: -100, left: -100 }]}>
+                    <Svg height="500" width="500" viewBox="0 0 500 500">
+                        <Defs>
+                            <RadialGradient id="splashGrad1" cx="250" cy="250" rx="250" ry="250" fx="250" fy="250" gradientUnits="userSpaceOnUse">
+                                <Stop offset="0" stopColor={Colors.accent1} stopOpacity="0.25" />
+                                <Stop offset="1" stopColor={Colors.accent1} stopOpacity="0" />
+                            </RadialGradient>
+                        </Defs>
+                        <Rect x="0" y="0" width="500" height="500" fill="url(#splashGrad1)" />
+                    </Svg>
+                </View>
+                <View style={[styles.svgBlob, { bottom: -100, right: -100 }]}>
+                    <Svg height="400" width="400" viewBox="0 0 400 400">
+                        <Defs>
+                            <RadialGradient id="splashGrad2" cx="200" cy="200" rx="200" ry="200" fx="200" fy="200" gradientUnits="userSpaceOnUse">
+                                <Stop offset="0" stopColor={Colors.accent2} stopOpacity="0.2" />
+                                <Stop offset="1" stopColor={Colors.accent2} stopOpacity="0" />
+                            </RadialGradient>
+                        </Defs>
+                        <Rect x="0" y="0" width="400" height="400" fill="url(#splashGrad2)" />
+                    </Svg>
+                </View>
             </View>
 
             {/* Mesh grid overlay */}
@@ -132,10 +148,17 @@ const SplashScreen: React.FC<Props> = ({ onFinish }) => {
                             opacity: logoOpacity,
                             transform: [{ scale: logoScale }],
                             flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
                         }}
                     >
-                        <Text style={styles.logoText}>Split</Text>
-                        <Text style={[styles.logoText, styles.logoAccent]}>Sync</Text>
+                        <Text style={[styles.logoText, { color: '#ffffff', marginBottom: 0 }]}>Split</Text>
+                        <GradientText
+                            colors={[Colors.accent1, Colors.accent2]}
+                            style={[styles.logoText, { marginBottom: 0 }]}
+                        >
+                            Sync
+                        </GradientText>
                     </Animated.View>
                 </View>
 
@@ -171,23 +194,8 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
-    blob1: {
+    svgBlob: {
         position: 'absolute',
-        width: width * 0.7,
-        height: width * 0.7,
-        borderRadius: width * 0.35,
-        top: -width * 0.2,
-        left: -width * 0.1,
-        opacity: 0.3,
-    },
-    blob2: {
-        position: 'absolute',
-        width: width * 0.6,
-        height: width * 0.6,
-        borderRadius: width * 0.3,
-        bottom: -width * 0.1,
-        right: -width * 0.1,
-        opacity: 0.3,
     },
     meshOverlay: {
         position: 'absolute',
