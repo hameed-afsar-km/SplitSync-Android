@@ -8,6 +8,7 @@ import {
     TextInput,
     Dimensions,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
     Plus,
@@ -188,6 +189,7 @@ const HomeScreen: React.FC<Props> = ({
 
             {/* Filter Bar */}
             <View style={styles.filterCard}>
+                <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search trips or date..."
@@ -282,6 +284,7 @@ const HomeScreen: React.FC<Props> = ({
                                 onPress={() => onSelectTrip(trip.id)}
                                 activeOpacity={0.8}
                             >
+                                <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
                                 <View style={styles.tripCardTop}>
                                     <Text style={[styles.tripName, { color: '#ffffff' }]} numberOfLines={1}>
                                         {trip.tripName}
@@ -444,12 +447,13 @@ const styles = StyleSheet.create({
     filterCard: {
         marginHorizontal: Spacing.lg,
         marginBottom: 20,
-        backgroundColor: Colors.bgGlass,
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
         borderWidth: 1,
-        borderColor: Colors.borderGlass,
+        borderColor: 'rgba(255, 255, 255, 0.08)',
         borderRadius: Radius.xl,
         padding: Spacing.lg,
         gap: Spacing.md,
+        overflow: 'hidden',
     },
     searchInput: {
         backgroundColor: 'rgba(0,0,0,0.3)',
@@ -513,12 +517,13 @@ const styles = StyleSheet.create({
         maxWidth: 280,
     },
     tripCard: {
-        backgroundColor: Colors.bgGlass,
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
         borderWidth: 1,
-        borderColor: Colors.borderGlass,
+        borderColor: 'rgba(255, 255, 255, 0.08)',
         borderRadius: Radius.xxl,
         padding: Spacing.xl,
         marginBottom: Spacing.sm,
+        overflow: 'hidden',
     },
     tripCardTop: {
         flexDirection: 'row',

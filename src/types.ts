@@ -48,6 +48,7 @@ export type ModalType =
     | 'CONFIRM_RESET_MEMBER'
     | 'CONFIRM_DELETE_MEMBER'
     | 'SETTINGS'
+    | 'EXPORT_SETTINGS'
     | 'LIMIT_REACHED'
     | null;
 

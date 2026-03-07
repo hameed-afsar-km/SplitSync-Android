@@ -10,8 +10,12 @@ import {
   Animated,
   Easing,
   Platform,
+  TextInput,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import * as XLSX from 'xlsx';
 import { Zap, Smartphone, RefreshCw } from 'lucide-react-native';
 import { Svg, Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { BlurView } from 'expo-blur';
@@ -173,6 +177,8 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [currentTripId, setCurrentTripId] = useState<string | null>(null);
+  const [exportFileName, setExportFileName] = useState('SplitSync_Data');
+  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const [toast, setToast] = useState<{ message: string; id: string } | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [modal, setModal] = useState<ModalState>({ isOpen: false, type: null, data: null });
@@ -319,13 +325,62 @@ export default function App() {
     closeModal();
   };
 
-  const handleExport = async () => {
+  const handleExport = () => {
+    setExportFileName('SplitSync_Data');
+    openModal('EXPORT_SETTINGS');
+  };
+
+  const handleExportConfirm = async () => {
     try {
-      const data = JSON.stringify(trips);
-      await Clipboard.setStringAsync(data);
-      showToast('Data copied to clipboard! Share it safely.');
+      const wb = XLSX.utils.book_new();
+
+      const ws_data = trips.map(t => ({
+        'Trip Name': t.tripName,
+        'Start Date': new Date(t.startDate).toLocaleDateString(),
+        'End Date': new Date(t.endDate).toLocaleDateString(),
+        'Members': t.members.length,
+        'Pool Total': t.members.reduce((a, b) => a + b.received, 0),
+        'Total Expenses': t.members.reduce((a, b) => a + b.expense, 0),
+      }));
+      const ws_trips = XLSX.utils.json_to_sheet(ws_data);
+      XLSX.utils.book_append_sheet(wb, ws_trips, 'Trips Overview');
+
+      const members_data: any[] = [];
+      trips.forEach(t => {
+        t.members.forEach(m => {
+          members_data.push({
+            'Trip Name': t.tripName,
+            'Member Name': m.name,
+            'Total Received': m.received,
+            'Total Expense': m.expense,
+            'To Give': m.toGive,
+            'To Get': m.toGet,
+            'Balance Due': m.remaining < 0 ? Math.abs(m.remaining) : 0,
+            'Credit': m.remaining > 0 ? m.remaining : 0,
+          });
+        });
+      });
+      const ws_members = XLSX.utils.json_to_sheet(members_data);
+      XLSX.utils.book_append_sheet(wb, ws_members, 'Members Detailed');
+
+      const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+      let finalName = exportFileName.trim() || 'SplitSync_Data';
+      finalName = finalName.replace(/[^a-z0-9_-]/gi, '_');
+
+      const uri = ((FileSystem as any).cacheDirectory || (FileSystem as any).documentDirectory) + finalName + '.xlsx';
+
+      await (FileSystem as any).writeAsStringAsync(uri, wbout, {
+        encoding: (FileSystem as any).EncodingType.Base64,
+      });
+
+      await (Sharing as any).shareAsync(uri, {
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        dialogTitle: 'Export Data File',
+      });
+
+      closeModal();
     } catch (e) {
-      showToast('Export failed.');
+      showToast('Export failed. Please try again.');
     }
   };
 
@@ -587,6 +642,33 @@ export default function App() {
       );
     }
 
+    if (type === 'EXPORT_SETTINGS') {
+      return (
+        <AppModal visible title="Export Data" onClose={closeModal}>
+          <Text style={s.settingLabel}>FILE NAME</Text>
+          <TextInput
+            style={[s.input, { marginBottom: Spacing.md }]}
+            value={exportFileName}
+            onChangeText={setExportFileName}
+            placeholder="e.g. EuropeTrip2026"
+            placeholderTextColor={Colors.textMuted}
+          />
+          <Text style={s.settingLabel}>OUTPUT FORMAT</Text>
+          <Text style={[s.input, { color: Colors.success, opacity: 0.8, marginBottom: Spacing.md }]}>
+            {exportFileName.trim() || 'SplitSync_Data'}.xlsx
+          </Text>
+          <Text style={s.settingLabel}>LOCATION</Text>
+          <Text style={{ color: Colors.textMuted, fontSize: 13, marginBottom: Spacing.xl }}>
+            You will be prompted to choose a location on your device to save the standard Excel file.
+          </Text>
+          <RowButtons>
+            <Btn label="Cancel" onPress={closeModal} variant="secondary" style={{ flex: 1 }} />
+            <Btn label="Generate & Save" onPress={handleExportConfirm} variant="primary" style={{ flex: 1 }} />
+          </RowButtons>
+        </AppModal>
+      );
+    }
+
     if (type === 'CONFIRM_CLEAR_ALL_TRIPS') {
       return (
         <AppModal visible title="Clear All Trips" onClose={closeModal}>
@@ -652,21 +734,44 @@ export default function App() {
         { label: 'South Korean Won (₩)', value: '₩' },
       ];
       return (
-        <AppModal visible title="Settings" onClose={closeModal}>
+        <AppModal visible title="Settings" onClose={() => { setShowCurrencyDropdown(false); closeModal(); }}>
           <Text style={s.settingLabel}>CURRENCY DENOMINATION</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: Spacing.md }}>
-            <View style={s.currencyRow}>
+
+          <TouchableOpacity
+            style={[s.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.md }]}
+            onPress={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
+            activeOpacity={0.8}
+          >
+            <Text style={{ color: Colors.textMain, fontSize: 16 }}>
+              {currencies.find(c => c.value === currency)?.label || currency}
+            </Text>
+            <Text style={{ color: Colors.textMuted, transform: [{ rotate: showCurrencyDropdown ? '180deg' : '0deg' }] }}>▼</Text>
+          </TouchableOpacity>
+
+          {showCurrencyDropdown && (
+            <View style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: Radius.lg, marginBottom: Spacing.md, overflow: 'hidden', borderWidth: 1, borderColor: Colors.borderGlass }}>
               {currencies.map(c => (
                 <TouchableOpacity
                   key={c.value}
-                  style={[s.currencyItem, currency === c.value && { borderColor: themePrimary, backgroundColor: `${themePrimary}20` }]}
-                  onPress={() => setCurrency(c.value)}
+                  style={{
+                    padding: 14,
+                    borderBottomWidth: 1,
+                    borderBottomColor: 'rgba(255,255,255,0.05)',
+                    backgroundColor: currency === c.value ? `${themePrimary}20` : 'transparent',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                  onPress={() => { setCurrency(c.value); setShowCurrencyDropdown(false); }}
                 >
-                  <Text style={[s.currencyText, currency === c.value && { color: themePrimary }]}>{c.label}</Text>
+                  <Text style={{ color: currency === c.value ? themePrimary : Colors.textMain, fontSize: 15, fontWeight: currency === c.value ? '700' : '500' }}>
+                    {c.label}
+                  </Text>
+                  {currency === c.value && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: themePrimary }} />}
                 </TouchableOpacity>
               ))}
             </View>
-          </ScrollView>
+          )}
 
           <Text style={[s.settingLabel, { marginTop: Spacing.xl }]}>APP APPEARANCE</Text>
           <View style={s.colorRow}>
@@ -857,6 +962,15 @@ const s = StyleSheet.create({
   logAmount: { fontWeight: '700', fontSize: 15 },
   confirmText: { color: Colors.textMuted, fontSize: 15, lineHeight: 22, marginBottom: 8 },
   settingLabel: { color: Colors.textMuted, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 },
+  input: {
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderWidth: 1,
+    borderColor: Colors.borderGlass,
+    borderRadius: Radius.md,
+    padding: Spacing.md,
+    color: Colors.textMain,
+    fontSize: 15,
+  },
   currencyRow: { flexDirection: 'row', gap: 8 },
   currencyItem: {
     paddingVertical: 8, paddingHorizontal: 12,

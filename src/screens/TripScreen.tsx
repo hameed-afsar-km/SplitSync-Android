@@ -7,6 +7,7 @@ import {
     TextInput,
     StyleSheet,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
 import {
     ArrowLeft,
     Trash2,
@@ -74,6 +75,7 @@ const TripScreen: React.FC<Props> = ({ trip, onBack, onOpenModal }) => {
 
             {/* Trip Header Card */}
             <View style={styles.headerCard}>
+                <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
                 <View style={styles.headerTop}>
                     <View style={styles.headerLeft}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -116,6 +118,7 @@ const TripScreen: React.FC<Props> = ({ trip, onBack, onOpenModal }) => {
             {/* Quick Actions */}
             {trip.members.length > 0 && (
                 <View style={styles.actionsCard}>
+                    <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
                     <View style={styles.actionsTop}>
                         <Text style={styles.actionsTitle}>Quick Actions</Text>
                         <View style={styles.actionsTopBtns}>
@@ -262,6 +265,7 @@ const MemberCard: React.FC<{
     onOpenModal: (type: string, data?: any) => void;
 }> = ({ member, currency, themePrimary, onOpenModal }) => (
     <View style={styles.memberCard}>
+        <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
         <View style={styles.memberCardTop}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
                 <Text style={[styles.memberName, { color: '#ffffff' }]} numberOfLines={1}>
@@ -341,12 +345,13 @@ const styles = StyleSheet.create({
     },
     backText: { color: Colors.textMain, fontSize: 14, fontWeight: '600' },
     headerCard: {
-        backgroundColor: Colors.bgGlass,
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
         borderWidth: 1,
-        borderColor: Colors.borderGlass,
+        borderColor: 'rgba(255, 255, 255, 0.08)',
         borderRadius: Radius.xxl,
         padding: Spacing.xl,
         marginBottom: Spacing.xl,
+        overflow: 'hidden',
     },
     headerTop: { gap: Spacing.md },
     headerLeft: { gap: 8 },
@@ -366,13 +371,14 @@ const styles = StyleSheet.create({
     statItemLabel: { color: Colors.textMuted, fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1 },
     statItemValue: { fontSize: 22, fontWeight: '700' },
     actionsCard: {
-        backgroundColor: Colors.bgGlass,
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
         borderWidth: 1,
-        borderColor: Colors.borderGlass,
+        borderColor: 'rgba(255, 255, 255, 0.08)',
         borderRadius: Radius.xl,
         padding: Spacing.lg,
         marginBottom: Spacing.xl,
         gap: Spacing.md,
+        overflow: 'hidden',
     },
     actionsTop: {
         flexDirection: 'row',
@@ -476,6 +482,7 @@ const styles = StyleSheet.create({
         borderRadius: Radius.xl,
         padding: Spacing.md,
         gap: Spacing.sm,
+        overflow: 'hidden',
     },
     memberCardTop: {
         flexDirection: 'row',
@@ -511,7 +518,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingVertical: 8,
         paddingHorizontal: 4,
-        width: '48.5%',
+        flexGrow: 1,
+        flexBasis: '45%',
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
