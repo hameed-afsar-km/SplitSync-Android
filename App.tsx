@@ -188,7 +188,7 @@ export default function App() {
 
   const rewarded = React.useMemo(() => {
     if (isExpoGo) return null;
-    return RewardedAd.createForAdRequest(TestIds.REWARDED, {
+    return RewardedAd.createForAdRequest('ca-app-pub-7299036615171019/3045153356', {
       requestNonPersonalizedAdsOnly: true,
       keywords: ['finance', 'travel', 'expenses'],
     });
@@ -196,7 +196,7 @@ export default function App() {
 
   const appOpenAd = React.useMemo(() => {
     if (isExpoGo) return null;
-    return AppOpenAd.createForAdRequest(TestIds.APP_OPEN, {
+    return AppOpenAd.createForAdRequest('ca-app-pub-7299036615171019/9248763349', {
       requestNonPersonalizedAdsOnly: true,
     });
   }, []);
@@ -916,7 +916,7 @@ export default function App() {
         )}
       </SafeAreaView>
 
-      <View style={{ paddingVertical: 16, alignItems: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)' }}>
+      <View style={{ paddingVertical: 12, alignItems: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)', backgroundColor: 'transparent' }}>
         <Text style={{ color: Colors.textMuted, fontSize: 11, fontWeight: '500', marginBottom: 4 }}>
           Developed by Hameed Afsar K M
         </Text>
@@ -927,9 +927,9 @@ export default function App() {
 
       {/* AdMob Banner at bottom */}
       {!isExpoGo && (
-        <View style={{ alignItems: 'center', backgroundColor: '#000' }}>
+        <View style={{ alignItems: 'center', backgroundColor: '#000', paddingBottom: Platform.OS === 'ios' ? 20 : 0 }}>
           <BannerAd
-            unitId={TestIds.BANNER}
+            unitId={'ca-app-pub-7299036615171019/6984398367'}
             size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
             requestOptions={{
               requestNonPersonalizedAdsOnly: true,
