@@ -749,7 +749,7 @@ export default function App() {
           </TouchableOpacity>
 
           {showCurrencyDropdown && (
-            <View style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: Radius.lg, marginBottom: Spacing.md, overflow: 'hidden', borderWidth: 1, borderColor: Colors.borderGlass }}>
+            <View style={{ backgroundColor: 'rgba(3, 3, 5, 0.8)', borderRadius: Radius.lg, marginBottom: Spacing.md, overflow: 'hidden', borderWidth: 1, borderColor: Colors.borderGlass }}>
               {currencies.map(c => (
                 <TouchableOpacity
                   key={c.value}
@@ -757,7 +757,7 @@ export default function App() {
                     padding: 14,
                     borderBottomWidth: 1,
                     borderBottomColor: 'rgba(255,255,255,0.05)',
-                    backgroundColor: currency === c.value ? `${themePrimary}20` : 'transparent',
+                    backgroundColor: currency === c.value ? `${themePrimary}30` : 'transparent',
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -915,6 +915,15 @@ export default function App() {
           />
         )}
       </SafeAreaView>
+
+      <View style={{ paddingVertical: 16, alignItems: 'center', borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)' }}>
+        <Text style={{ color: Colors.textMuted, fontSize: 11, fontWeight: '500', marginBottom: 4 }}>
+          Developed by Hameed Afsar K M
+        </Text>
+        <Text style={{ color: Colors.textMuted, fontSize: 10, opacity: 0.6 }}>
+          © 2026 SplitSync • Designed with ❤️ for travelers
+        </Text>
+      </View>
 
       {/* AdMob Banner at bottom */}
       {!isExpoGo && (

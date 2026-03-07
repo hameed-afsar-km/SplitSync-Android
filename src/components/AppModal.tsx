@@ -44,8 +44,7 @@ const AppModal: React.FC<Props> = ({ visible, title, onClose, children }) => {
                     style={styles.keyboardView}
                     keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
                 >
-                    <View style={styles.content}>
-                        <BlurView intensity={Platform.OS === 'ios' ? 60 : 80} tint="dark" style={StyleSheet.absoluteFill} />
+                    <View style={[styles.content, { backgroundColor: '#030305' }]}>
                         <ScrollView
                             showsVerticalScrollIndicator={false}
                             keyboardShouldPersistTaps="handled"
